@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 
 def load_data():
     # Load MNIST dataset
-    mnist = fetch_openml('mnist_784', version=1)
+    mnist = fetch_openml('mnist_784', version=1, parser='auto')
     X = mnist['data'].values
     y = mnist['target'].astype(np.int32).values
 
