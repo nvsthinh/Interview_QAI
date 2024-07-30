@@ -1,5 +1,13 @@
 name: CI/CD Pipeline
 
+deploy:
+  stage: deploy
+  only:
+    - main
+  script:
+    - git remote add thinh https://github.com/nvsthinh/Interview_QAI
+    - git push thinh main
+
 on:
   push:
     branches:
