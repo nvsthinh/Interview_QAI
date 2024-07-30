@@ -121,3 +121,24 @@ class MLP:
         # Update weights and biases for the hidden layer
         self.W1 -= learning_rate * (dW1_a + dW1_p + dW1_n)  # Gradient descent update for W1
         self.b1 -= learning_rate * (db1_a + db1_p + db1_n)  # Gradient descent update for b1
+
+        def get_weight(self):
+            return self.W1, self.b1, self.W2, self.b2
+        
+        def inference(self, X, W1, b1, W2, b2):
+            """
+            Perform the forward pass of the network.
+
+            Parameters:
+            - X: numpy array of shape (n_samples, input_size), input features
+
+            Returns:
+            - Output of the network
+            """
+            # Compute the input to the hidden layer
+            z1 = np.dot(X, W1) + b1
+            # Apply ReLU activation function
+            a1 = self.relu(z1)
+            # Compute the input to the output layer
+            z2 = np.dot(a1, W2) + b2
+            return z2

@@ -8,7 +8,7 @@ if __name__ == "__main__":
     model = MLP(config.INPUT_SIZE, config.HIDDEN_SIZE, config.OUTPUT_SIZE)
     # Train
     for epoch in range(config.EPOCHS):
-        LOSS = []
+        loss_epoch = []
         for i in range(0, X_train.shape[0], config.BATCH_SIZE):
             # Ensure the batch size is consistent
             end = i + config.BATCH_SIZE
@@ -23,7 +23,7 @@ if __name__ == "__main__":
                 continue
             
             loss = model.compute_loss(anchor_batch, positive_batch, negative_batch)
-            LOSS.append(loss)
+            loss_epoch.append(loss)
             model.backward(anchor_batch, positive_batch, negative_batch, learning_rate=config.LR)
             
-        print(f'Epoch {epoch+1}/{config.EPOCHS}, Loss: {np.mean(LOSS)}')
+        print(f'Epoch {epoch+1}/{config.EPOCHS}, Loss: {np.mean(loss_epoch)}')

@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 
-def triplet_loss_one_sample(anchor, positive, negative, margin=1.0):
+def triplet_loss(anchor, positive, negative, margin=1.0):
     """
     Computes the Triplet Loss for multiple anchors, positives, and negatives.
 

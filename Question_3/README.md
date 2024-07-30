@@ -3,3 +3,5 @@
 - `config.py`: Contain configuration such as learning rate, batch size, ...
 - `main.py`: Simple pipeline
 - `utils.py`: Contain triplet_loss_one_sample, load_data
+
+# 
