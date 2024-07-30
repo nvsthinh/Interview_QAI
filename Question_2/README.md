@@ -1,7 +1,4 @@
 # Triplet Loss
-- `triplet_loss_one_sample.py`: Contain Triplet Loss implementation with 1 anchor and 1 fake sample
-- `triplet_loss_multi_samples.py`: Contain Triplet Loss implementation with 2 anchors and 5 fake samples
-- `notebook/Triplet_Loss.ipynb`: contain example implementation with one and multiple samples
 ## 1. Definition
 Triplet Loss is a commonly used loss function in image recognition and matching problems, especially in deep learning models. The goal of Triplet Loss is to ensure that examples of the same class are closer to each other in the feature space than examples of different classes.
 ## 2. Formula Triplet Loss with One Samples
@@ -42,3 +39,7 @@ Where:
 - **Face Recognition**: Ensures that faces of the same person are closer in the feature space compared to faces of different people.
 - **Image Retrieval**: Helps in learning embeddings such that similar images are closer together in the feature space.
 
+## 5. Files
+- `triplet_loss_one_sample.py`: Contain Triplet Loss implementation with 1 anchor and 1 fake sample
+- `triplet_loss_multi_samples.py`: Contain Triplet Loss implementation with 2 anchors and 5 fake samples
+- `notebook/Triplet_Loss.ipynb`: contain example implementation with one and multiple samples
