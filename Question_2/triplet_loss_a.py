@@ -1,17 +1,17 @@
 import numpy as np
 
-def triplet_loss_a(anchor, positive, negative, margin=1.0):
+def triplet_loss_one_samples(anchor, positive, negative, margin=1.0):
     """
-    Tính toán Triplet Loss.
+    Computes the Triplet Loss for multiple anchors, positives, and negatives.
 
     Parameters:
-    - anchor: np.ndarray, vector đặc trưng của anchor.
-    - positive: np.ndarray, vector đặc trưng của positive.
-    - negative: np.ndarray, vector đặc trưng của negative.
-    - margin: float, margin để tính toán loss.
+    - anchor: np.ndarray, feature vector of the anchors.
+    - positive: np.ndarray, feature vector of the positive.
+    - negative: np.ndarray, feature vector of the negative.
+    - margin: float, margin for calculating the loss.
 
     Returns:
-    - loss: float, giá trị của triplet loss.
+    - total_loss: float, the value of the triplet loss.
     """
     # Tính toán khoảng cách bình phương giữa anchor và positive
     pos_dist = np.sum(np.square(anchor - positive), axis=-1)
