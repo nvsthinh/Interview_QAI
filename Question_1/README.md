@@ -4,3 +4,4 @@
 - `main.py`: Simple pipeline
 - `model.py`: Adaboost implementation from scratch using Numpy
 - `utils.py`: Load MNIST dataset
+- `notebook/AdaBoost_with_MNIST_Dataset.ipynb`: Example implementation for Question 1
