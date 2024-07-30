@@ -2,26 +2,26 @@ import numpy as np
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 
-def triplet_loss(anchor, positive, negative, margin=1.0):
+def triplet_loss_one_sample(anchor, positive, negative, margin=1.0):
     """
-    Tính toán Triplet Loss.
+    Computes the Triplet Loss for multiple anchors, positives, and negatives.
 
     Parameters:
-    - anchor: np.ndarray, vector đặc trưng của anchor.
-    - positive: np.ndarray, vector đặc trưng của positive.
-    - negative: np.ndarray, vector đặc trưng của negative.
-    - margin: float, margin để tính toán loss.
+    - anchor: np.ndarray, feature vector of the anchors.
+    - positive: np.ndarray, feature vector of the positive.
+    - negative: np.ndarray, feature vector of the negative.
+    - margin: float, margin for calculating the loss.
 
     Returns:
-    - loss: float, giá trị của triplet loss.
+    - total_loss: float, the value of the triplet loss.
     """
-    # Tính toán khoảng cách bình phương giữa anchor và positive
+    # Compute the squared distance between the anchor and the positive example
     pos_dist = np.sum(np.square(anchor - positive), axis=-1)
     
-    # Tính toán khoảng cách bình phương giữa anchor và negative
+    # Compute the squared distance between the anchor and the negative example
     neg_dist = np.sum(np.square(anchor - negative), axis=-1)
     
-    # Tính toán Triplet Loss
+    # Compute the Triplet Loss
     loss = np.maximum(0, pos_dist - neg_dist + margin)
     
     return loss
