@@ -1,6 +1,6 @@
 import numpy as np
 
-def extended_triplet_loss(anchor, positives, negatives, margin=0.2):
+def triplet_loss_multi_samples(anchor, positives, negatives, margin=0.2):
     """
     Compute the Triplet Loss for multiple positives and negatives.
 
