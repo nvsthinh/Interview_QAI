@@ -28,7 +28,7 @@ def triplet_loss(anchor, positive, negative, margin=1.0):
 
 def load_data():
     # Load MNIST dataset
-    mnist = fetch_openml('mnist_784', version=1)
+    mnist = fetch_openml('mnist_784', version=1, parser='auto')
     X = mnist['data'].values
     y = mnist['target'].astype(np.int32).values
 
