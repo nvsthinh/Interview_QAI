@@ -46,3 +46,65 @@ def load_data():
     X_test = X_test.reshape(X_test.shape[0], -1)
 
     return X_train, X_test, y_train, y_test
+
+def create_triplets(X, y, batch_size):
+    """
+    Create triplets (anchor, positive, negative) for training.
+
+    Parameters:
+    - X: np.ndarray, feature vectors of the samples
+    - y: np.ndarray, labels of the samples
+    - batch_size: int, number of triplets in the batch
+
+    Returns:
+    - anchor: np.ndarray, anchor samples
+    - positive: np.ndarray, positive samples
+    - negative: np.ndarray, negative samples
+    """
+    anchor, positive, negative = [], [], []
+    for _ in range(batch_size):
+        # Select anchor sample
+        idx = np.random.randint(0, len(X))
+        anchor.append(X[idx])
+        
+        # Select positive sample (different sample of the same class)
+        pos_idxs = np.where(y == y[idx])[0]
+        pos_idx = np.random.choice(pos_idxs[pos_idxs != idx])
+        positive.append(X[pos_idx])
+        
+        # Select negative sample (sample of a different class)
+        neg_idxs = np.where(y != y[idx])[0]
+        neg_idx = np.random.choice(neg_idxs)
+        negative.append(X[neg_idx])
+    
+    return np.array(anchor), np.array(positive), np.array(negative)
+
+def extract_label_features(model, X_train, y_train):
+    # Extract one sample for each label
+    unique_labels = np.unique(y_train)
+    label_samples = {label: X_train[np.where(y_train == label)[0][0]] for label in unique_labels}
+
+    # Extract features for each label sample
+    label_features = {label: model.forward(sample) for label, sample in label_samples.items()}
+
+    # Store the features in a list
+    label_features_list = [label_features[label] for label in unique_labels]
+
+    return label_features_list, unique_labels
+
+def cosine_similarity(v1, v2):
+    """
+    Compute the cosine similarity between two vectors.
+
+    Parameters:
+    - v1: np.ndarray, first vector
+    - v2: np.ndarray, second vector
+
+    Returns:
+    - similarity: float, cosine similarity score
+    """
+    dot_product = np.dot(v1, v2.T)
+    norm_v1 = np.linalg.norm(v1)
+    norm_v2 = np.linalg.norm(v2)
+    similarity = dot_product / (norm_v1 * norm_v2)
+    return similarity
