@@ -1,115 +1,141 @@
 import numpy as np
+from collections import Counter
 
-class DecisionStump:
-    def __init__(self):
-        # Initialize the stump's parameters
-        self.polarity = 1      # Polarity of the stump (+1 or -1)
-        self.feature_index = None   # Index of the feature to split on
-        self.threshold = None      # Threshold for the feature split
-        self.alpha = None      # Weight of the stump in the final classifier
-
-    def predict(self, X):
-        """
-        Predict the labels for the given samples.
-
-        Parameters:
-        - X: numpy array of shape (n_samples, n_features), the input features
-
-        Returns:
-        - predictions: numpy array of shape (n_samples,), the predicted labels
-        """
-        n_samples = X.shape[0]
-        X_column = X[:, self.feature_index]  # Extract the feature column for prediction
-        predictions = np.ones(n_samples)      # Initialize predictions to 1 (default class)
-        
-        if self.polarity == 1:
-            predictions[X_column < self.threshold] = -1  # Set to -1 if below threshold
-        else:
-            predictions[X_column > self.threshold] = -1  # Set to -1 if above threshold
-        
-        return predictions
-
-class AdaBoost:
-    def __init__(self, n_clf=5):
-        """
-        Initialize the AdaBoost classifier.
-
-        Parameters:
-        - n_clf: int, number of weak classifiers (decision stumps)
-        """
-        self.n_clf = n_clf  # Number of classifiers (stumps) to use
+class DecisionTree:
+    def __init__(self, max_depth):
+        self.max_depth = max_depth
 
     def fit(self, X, y):
-        """
-        Fit the AdaBoost model.
-
-        Parameters:
-        - X: numpy array of shape (n_samples, n_features), the input features
-        - y: numpy array of shape (n_samples,), the target labels
-        """
-        n_samples, n_features = X.shape
-        y = np.where(y == 0, -1, 1)  # Convert labels from {0, 1} to {-1, 1}
-
-        # Initialize weights for all samples
-        w = np.full(n_samples, (1 / n_samples))
-
-        self.clfs = []  # List to store the weak classifiers
-
-        for _ in range(self.n_clf):
-            clf = DecisionStump()  # Create a new decision stump
-            min_error = float('inf')  # Initialize the minimum error to infinity
-
-            # Loop over all features
-            for feature_i in range(n_features):
-                X_column = X[:, feature_i]  # Extract feature column
-                thresholds = np.unique(X_column)  # Get unique values as thresholds
-
-                for threshold in thresholds:
-                    p = 1  # Initialize polarity to +1
-                    predictions = np.ones(n_samples)  # Initialize predictions to +1
-                    predictions[X_column < threshold] = -1  # Predictions for the current threshold
-
-                    # Calculate the weighted error for the current stump
-                    error = np.sum(w * (predictions != y))
-
-                    # If the error is greater than 50%, flip the polarity
-                    if error > 0.5:
-                        error = 1 - error
-                        p = -1
-
-                    # Update the best stump if this one has lower error
-                    if error < min_error:
-                        clf.polarity = p
-                        clf.threshold = threshold
-                        clf.feature_index = feature_i
-                        min_error = error
-
-            # Calculate the weight (alpha) of the stump
-            clf.alpha = 0.5 * np.log((1 - min_error) / (min_error + 1e-10))
-
-            # Update weights for the next round
-            predictions = clf.predict(X)
-            w *= np.exp(-clf.alpha * y * predictions)  # Adjust weights based on error
-            w /= np.sum(w)  # Normalize weights
-
-            self.clfs.append(clf)  # Store the trained stump
+        # Store the number of classes and features
+        self.n_classes = len(set(y))
+        self.n_features = X.shape[1]
+        # Build the decision tree
+        self.tree = self._grow_tree(X, y)
 
     def predict(self, X):
-        """
-        Predict the labels for the given samples.
+        # Predict labels for input data
+        return np.array([self._predict(inputs) for inputs in X])
 
-        Parameters:
-        - X: numpy array of shape (n_samples, n_features), the input features
+    def _grow_tree(self, X, y, depth=0):
+        n_samples, n_features = X.shape
+        # Stop if maximum depth is reached or only one class is left
+        if depth >= self.max_depth or len(set(y)) == 1:
+            leaf_value = self._most_common_label(y)
+            return Node(value=leaf_value)
 
-        Returns:
-        - y_pred: numpy array of shape (n_samples,), the predicted labels
-        """
-        clf_preds = np.zeros(X.shape[0])  # Initialize predictions to zero
+        # Select random features
+        feature_idxs = np.random.choice(n_features, self.n_features, replace=False)
+        # Find the best split
+        best_feat, best_thresh = self._best_criteria(X, y, feature_idxs)
+        left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
 
-        # Sum the weighted predictions from all classifiers
-        for clf in self.clfs:
-            clf_preds += clf.alpha * clf.predict(X)
+        # Recursively grow the left and right branches
+        left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
+        right = self._grow_tree(X[right_idxs, :], y[right_idxs], depth + 1)
+        return Node(best_feat, best_thresh, left, right)
 
-        # Determine final class based on the sign of the aggregated predictions
-        y_pred = np.sign(clf_preds)
-        return np.where(y_pred == -1, 0, 1)  # Convert {-1, 1} to {0, 1}
+    def _best_criteria(self, X, y, feature_idxs):
+        best_gain = -1
+        split_idx, split_thresh = None, None
+        # Loop through features and thresholds to find the best split
+        for feat_idx in feature_idxs:
+            X_column = X[:, feat_idx]
+            thresholds = np.unique(X_column)
+            for threshold in thresholds:
+                gain = self._information_gain(y, X_column, threshold)
+                if gain > best_gain:
+                    best_gain = gain
+                    split_idx = feat_idx
+                    split_thresh = threshold
+        return split_idx, split_thresh
+
+    def _information_gain(self, y, X_column, split_thresh):
+        # Calculate the entropy of the parent node
+        parent_entropy = self._entropy(y)
+        # Split the data
+        left_idxs, right_idxs = self._split(X_column, split_thresh)
+
+        # Return 0 if no split is possible
+        if len(left_idxs) == 0 or len(right_idxs) == 0:
+            return 0
+
+        # Calculate the weighted entropy of the child nodes
+        n = len(y)
+        n_left, n_right = len(left_idxs), len(right_idxs)
+        e_left, e_right = self._entropy(y[left_idxs]), self._entropy(y[right_idxs])
+        child_entropy = (n_left / n) * e_left + (n_right / n) * e_right
+
+        # Calculate information gain
+        ig = parent_entropy - child_entropy
+        return ig
+
+    def _split(self, X_column, split_thresh):
+        # Split the data into left and right branches
+        left_idxs = np.argwhere(X_column <= split_thresh).flatten()
+        right_idxs = np.argwhere(X_column > split_thresh).flatten()
+        return left_idxs, right_idxs
+
+    def _entropy(self, y):
+        # Calculate the entropy of a label distribution
+        hist = np.bincount(y)
+        ps = hist / len(y)
+        return -np.sum([p * np.log2(p) for p in ps if p > 0])
+
+    def _most_common_label(self, y):
+        # Return the most common label in the array
+        counter = Counter(y)
+        most_common = counter.most_common(1)[0][0]
+        return most_common
+
+    def _predict(self, inputs):
+        # Predict the label for a single input
+        node = self.tree
+        while node.left:
+            if inputs[node.feature] <= node.threshold:
+                node = node.left
+            else:
+                node = node.right
+        return node.value
+
+class Node:
+    def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
+        # Initialize a tree node
+        self.feature = feature
+        self.threshold = threshold
+        self.left = left
+        self.right = right
+        self.value = value
+
+class RandomForest:
+    def __init__(self, n_trees=100, max_depth=10):
+        self.n_trees = n_trees
+        self.max_depth = max_depth
+        self.trees = []
+
+    def fit(self, X, y):
+        # Train multiple decision trees
+        self.trees = []
+        for _ in range(self.n_trees):
+            tree = DecisionTree(max_depth=self.max_depth)
+            X_sample, y_sample = self._bootstrap_sample(X, y)
+            tree.fit(X_sample, y_sample)
+            self.trees.append(tree)
+
+    def predict(self, X):
+        # Predict labels using majority voting from all trees
+        tree_preds = np.array([tree.predict(X) for tree in self.trees])
+        tree_preds = np.swapaxes(tree_preds, 0, 1)
+        y_pred = [Counter(tree_pred).most_common(1)[0][0] for tree_pred in tree_preds]
+        return np.array(y_pred)
+
+    def _bootstrap_sample(self, X, y):
+        # Generate a bootstrap sample
+        n_samples = X.shape[0]
+        idxs = np.random.choice(n_samples, n_samples, replace=True)
+        return X[idxs], y[idxs]
+
+    def score(self, X, y):
+        # Calculate accuracy
+        y_pred = self.predict(X)
+        accuracy = np.sum(y_pred == y) / len(y)
+        return accuracy
