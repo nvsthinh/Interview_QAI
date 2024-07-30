@@ -4,16 +4,22 @@ from sklearn.model_selection import train_test_split
 
 def triplet_loss(anchor, positive, negative, margin=1.0):
     """
-    Computes the Triplet Loss for multiple anchors, positives, and negatives.
+    Computes the Triplet Loss for given anchor, positive, and negative samples.
 
     Parameters:
-    - anchor: np.ndarray, feature vector of the anchors.
-    - positive: np.ndarray, feature vector of the positive.
-    - negative: np.ndarray, feature vector of the negative.
-    - margin: float, margin for calculating the loss.
+    - anchor: np.ndarray
+      Feature vector of the anchor sample.
+    - positive: np.ndarray
+      Feature vector of the positive sample (same class as anchor).
+    - negative: np.ndarray
+      Feature vector of the negative sample (different class from anchor).
+    - margin: float, default=1.0
+      Margin for the loss function to ensure the distance between anchor and negative is greater than the distance 
+      between anchor and positive by at least the margin.
 
     Returns:
-    - total_loss: float, the value of the triplet loss.
+    - total_loss: float
+      The calculated triplet loss value.
     """
     # Compute the squared distance between the anchor and the positive example
     pos_dist = np.sum(np.square(anchor - positive), axis=-1)
@@ -21,27 +27,49 @@ def triplet_loss(anchor, positive, negative, margin=1.0):
     # Compute the squared distance between the anchor and the negative example
     neg_dist = np.sum(np.square(anchor - negative), axis=-1)
     
-    # Compute the Triplet Loss
+    # Compute the Triplet Loss using the margin
     loss = np.maximum(0, pos_dist - neg_dist + margin)
     
     return loss
 
 def load_data():
-    # Load MNIST dataset
+    """
+    Load the MNIST dataset, preprocess the data, and split it into training and test sets.
+
+    This function:
+    - Fetches the MNIST dataset from OpenML
+    - Normalizes the feature values to the range [0, 1]
+    - Binarizes the labels (specifically for class 0)
+    - Splits the data into training and test sets
+    - Reshapes the data to be suitable for MLP models
+
+    Returns:
+    - X_train: np.ndarray
+      The feature matrix for the training set.
+    - X_test: np.ndarray
+      The feature matrix for the test set.
+    - y_train: np.ndarray
+      The labels for the training set.
+    - y_test: np.ndarray
+      The labels for the test set.
+    """
+    # Load the MNIST dataset from OpenML
     mnist = fetch_openml('mnist_784', version=1, parser='auto')
+    
+    # Extract features and labels from the dataset
     X = mnist['data'].values
     y = mnist['target'].astype(np.int32).values
 
-    # Normalize the data
+    # Normalize the feature values to the range [0, 1]
     X = X / 255.0
 
-    # Binarize the labels
+    # Binarize the labels (for class 0 vs. non-class 0)
     y = (y == 0).astype(np.int32)
 
-    # Split into training and test sets
+    # Split the dataset into training and test sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Ensure the data is in the right shape for MLP (N, D) where N is number of samples, D is number of features
+    # Reshape the data to ensure it's suitable for MLP (N, D) where N is number of samples, D is number of features
     X_train = X_train.reshape(X_train.shape[0], -1)
     X_test = X_test.reshape(X_test.shape[0], -1)
 
@@ -49,30 +77,36 @@ def load_data():
 
 def create_triplets(X, y, batch_size):
     """
-    Create triplets (anchor, positive, negative) for training.
+    Generate triplets (anchor, positive, negative) for training.
 
     Parameters:
-    - X: np.ndarray, feature vectors of the samples
-    - y: np.ndarray, labels of the samples
-    - batch_size: int, number of triplets in the batch
+    - X: np.ndarray
+      Feature vectors of the samples.
+    - y: np.ndarray
+      Labels of the samples.
+    - batch_size: int
+      Number of triplets to generate.
 
     Returns:
-    - anchor: np.ndarray, anchor samples
-    - positive: np.ndarray, positive samples
-    - negative: np.ndarray, negative samples
+    - anchor: np.ndarray
+      Array of anchor samples.
+    - positive: np.ndarray
+      Array of positive samples corresponding to anchors.
+    - negative: np.ndarray
+      Array of negative samples corresponding to anchors.
     """
     anchor, positive, negative = [], [], []
     for _ in range(batch_size):
-        # Select anchor sample
+        # Select a random anchor sample
         idx = np.random.randint(0, len(X))
         anchor.append(X[idx])
         
-        # Select positive sample (different sample of the same class)
+        # Select a positive sample (different sample of the same class as the anchor)
         pos_idxs = np.where(y == y[idx])[0]
         pos_idx = np.random.choice(pos_idxs[pos_idxs != idx])
         positive.append(X[pos_idx])
         
-        # Select negative sample (sample of a different class)
+        # Select a negative sample (sample of a different class from the anchor)
         neg_idxs = np.where(y != y[idx])[0]
         neg_idx = np.random.choice(neg_idxs)
         negative.append(X[neg_idx])
@@ -80,11 +114,28 @@ def create_triplets(X, y, batch_size):
     return np.array(anchor), np.array(positive), np.array(negative)
 
 def extract_label_features(model, X_train, y_train):
+    """
+    Extract feature vectors for one sample of each label from the training set using the provided model.
+
+    Parameters:
+    - model: object
+      The model used to extract features.
+    - X_train: np.ndarray
+      Feature matrix of the training set.
+    - y_train: np.ndarray
+      Labels of the training set.
+
+    Returns:
+    - label_features_list: list of np.ndarray
+      List of feature vectors, one for each unique label.
+    - unique_labels: np.ndarray
+      Array of unique labels.
+    """
     # Extract one sample for each label
     unique_labels = np.unique(y_train)
     label_samples = {label: X_train[np.where(y_train == label)[0][0]] for label in unique_labels}
 
-    # Extract features for each label sample
+    # Extract features for each label sample using the model
     label_features = {label: model.forward(sample) for label, sample in label_samples.items()}
 
     # Store the features in a list
@@ -97,11 +148,14 @@ def cosine_similarity(v1, v2):
     Compute the cosine similarity between two vectors.
 
     Parameters:
-    - v1: np.ndarray, first vector
-    - v2: np.ndarray, second vector
+    - v1: np.ndarray
+      The first vector.
+    - v2: np.ndarray
+      The second vector.
 
     Returns:
-    - similarity: float, cosine similarity score
+    - similarity: float
+      The cosine similarity score between the two vectors.
     """
     dot_product = np.dot(v1, v2.T)
     norm_v1 = np.linalg.norm(v1)
