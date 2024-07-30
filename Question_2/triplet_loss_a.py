@@ -1,6 +1,6 @@
 import numpy as np
 
-def triplet_loss(anchor, positive, negative, margin=1.0):
+def triplet_loss_a(anchor, positive, negative, margin=1.0):
     """
     Tính toán Triplet Loss.
 
