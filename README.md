@@ -1,5 +1,7 @@
 # Interview_QAI
 
+Đây là Github Repo chứa những Bài tập phỏng vấn tương ứng. Cụ thể như sau:
+
 | Question   | Detail  | Github |README|
 | :----------|:-----------------:| :-----:|-----:|
 | Question 1 | Random Forest Classifier trên tập dữ liệu MNIST với Numpy| [Github](https://github.com/nvsthinh/Interview_QAI/tree/main/Question_1) |[README](https://github.com/nvsthinh/Interview_QAI/blob/main/Question_1/README.md)|
