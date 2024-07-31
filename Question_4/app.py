@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import numpy as np
 from PIL import Image
 import io
@@ -36,6 +36,10 @@ def inference(model, input):
     
     return predicted_label
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'file' not in request.files:
@@ -49,10 +53,10 @@ def predict():
         image = Image.open(io.BytesIO(file.read()))
         image_array = preprocess_image(image)
         prediction = inference(model, image_array)  # Dự đoán với mô hình Numpy
-        predicted_label = int(prediction[0])
+        predicted_label = int(prediction)
         return jsonify({'label': predicted_label})
 
     return jsonify({'error': 'Invalid file type'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
