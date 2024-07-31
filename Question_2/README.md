@@ -15,7 +15,8 @@ Trong đó
 
 ## 3. Công thức Triplet Loss với Multiple Samples (Question 2 - b)
 $$\mathcal{L} = \frac{1}{A} \sum_{i=1}^{N} \max\left(0, \frac{1}{P} \sum_{p\in P}\|f(x_i^a) - f(x_i^p)\|^2 - \frac{1}{N}\sum_{n\in N} \|f(x_i^a) - f(x_i^n)\|^2 + \alpha\right)$$
-Where
+
+Trong đó:
 - $x_i^a$ là anchor.
 - $x_i^p$ là positive sample.
 - $x_i^n$ là negative sample.
