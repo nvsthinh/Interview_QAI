@@ -1,56 +1,55 @@
 # Triplet Loss
-## 1. Definition
-Triplet Loss is a commonly used loss function in image recognition and matching problems, especially in deep learning models. The goal of Triplet Loss is to ensure that samples of the same class are closer to each other in the feature space than samples of different classes.
-## 2. Formula Triplet Loss with One Samples (Question 2 - a)
-The Triplet Loss can be expressed as:
+## 1. Định nghĩa
+Triplet Loss là một hàm mất mát thường được sử dụng trong các vấn đề Image Regconition và Matching Problems, đặc biệt là trong các mô hình Deep LEarning. Mục tiêu của Triplet Loss là đảm bảo rằng các mẫu thuộc cùng một lớp gần nhau hơn trong không gian đặc trưng so với các mẫu thuộc các lớp khác nhau.
+## 2. Công thức Triplet Loss với One Samples (Question 2 - a)
+Triplet Loss được biểu diễn:
 
 $$\mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} \max\left(0, \|f(x_i^a) - f(x_i^p)\|^2 - \|f(x_i^a) - f(x_i^n)\|^2 + \alpha\right)$$
 
-Where
-- $x_i^a$ is the anchor.
-- $x_i^p$ is the positive sample (same class as the anchor).
-- $x_i^n$ is the negative sample (different class as the anchor).
-- $α$ is the margin.
-- $N$ is the number of triplets used in the loss calculation.
+Trong đó
+- $x_i^a$ là anchor.
+- $x_i^p$ là positive sample (cùng class với anchor).
+- $x_i^n$ là negative sample (khác class với anchor).
+- $α$ là margin.
+- $N$ là số lượng triplets được tính.
 
-
-## 3. Formula Triplet Loss with Multiple Samples (Question 2 - b)
+## 3. Công thức Triplet Loss với Multiple Samples (Question 2 - b)
 $$\mathcal{L} = \frac{1}{A} \sum_{i=1}^{N} \max\left(0, \frac{1}{P} \sum_{p\in P}\|f(x_i^a) - f(x_i^p)\|^2 - \frac{1}{N}\sum_{n\in N} \|f(x_i^a) - f(x_i^n)\|^2 + \alpha\right)$$
 Where
-- $x_i^a$ is the anchor.
-- $x_i^p$ is the positive sample.
-- $x_i^n$ is the negative sample.
-- $α$ is the margin.
-- $P$ is number of positive samples.
-- $N$ is number of negative samples.
-- $A$ is the number of triplets used in the loss calculation.
-
-## 4. Explain Formula
-### 4.1. Embedding Function $f$
-- $f(x)$: A function (usually a neural network) that maps an input $x$ to an embedding space where comparisons can be made.
+- $x_i^a$ là anchor.
+- $x_i^p$ là positive sample.
+- $x_i^n$ là negative sample.
+- $α$ là margin.
+- $P$ là số lượng của positive samples.
+- $N$ là số lượng của negative samples.
+- $A$ là số lượng triplets được tính.
+## 4. Giải thích công thức
+### 4.1. Hàm Embedding $f$
+- $f(x)$: Một hàm (thường là mạng nơ-ron) ánh xạ một đầu vào $x$ đến một không gian embedding nơi có thể thực hiện các so sánh.
 ### 4.2. Distance Metric
-- $\|f(x_i^a) - f(x_i^p)\|^2$: The squared distance between the anchor and the positive sample in the embedding space. (L2 distance)
-- $\|f(x_i^a) - f(x_i^n)\|^2$: The squared distance between the anchor and the negative sample in the embedding space (L2 distance)
+- $\|f(x_i^a) - f(x_i^p)\|^2$: Khoảng cách bình phương giữa anchor và positive sample trong không gian embedding. (L2 Distance)
+
+- $\|f(x_i^a) - f(x_i^n)\|^2$: Khoảng cách bình phương giữa anchor và negative sample trong không gian embedding. (L2 Distance)
 ### 4.3. Margin $\alpha $
-A margin that is enforced between the positive and negative pairs. This margin helps ensure that the negative examples are farther away from the anchor than the positive examples by at least $\alpha$.
+- Margin được áp dụng giữa các cặp positive và negative. Margin giúp đảm bảo negative samples cách xa the anchor hơn positive examples ít nhất $\alpha$.
 ### 4.4. Loss Calculation
-- If the positive pair distance is not sufficiently smaller than the negative pair distance by at least $\alpha$, the term $\|f(x_i^a) - f(x_i^p)\|^2 - \|f(x_i^a) - f(x_i^n)\|^2 + \alpha$ will be positive, contributing to the loss.
-- The $\max$ function ensures that only positive values contribute to the loss. If the difference is negative (i.e., the triplet already satisfies the condition), the loss for that triplet is zero.
-## 5. Advantages & Disadvantages
-### 5.1. Advantages
+- Nếu khoảng cách của cặp mẫu dương không đủ nhỏ hơn khoảng cách của cặp mẫu âm ít nhất là $a$, thì biểu thức $\|f(x_i^a) - f(x_i^p)\|^2 - \|f(x_i^a) - f(x_i^n)\|^2 + \alpha$ sẽ dương, đóng góp vào mất mát.
+- Hàm $\max$ đảm bảo rằng chỉ có các giá trị dương mới góp phần vào mất mát. Nếu sự khác biệt là âm (tức là bộ ba đã thỏa mãn điều kiện), mất mát cho bộ ba đó là bằng không.
+## 5. Ưu, nhược điểm
+### 5.1. Ưu điểm
 - Discriminative Feature Learning
 - Robust to Class Imbalance
 - Good for High-Dimensional Data
 
-### 5.2. Disadvantages
+### 5.2. Nhược điểm
 - Margin Sensitivity
 - Selection of Triplets
 - Computational Cost
-## 6. Applications
-- **Face Recognition**: Ensures that faces of the same person are closer in the feature space compared to faces of different people.
-- **Image Retrieval**: Helps in learning embeddings such that similar images are closer together in the feature space.
+## 6. Ứng dụng
+- **Face Recognition**: ảm bảo rằng các khuôn mặt của cùng một người gần nhau hơn trong không gian embedding so với các khuôn mặt của những người khác nhau.
+- **Image Retrieval**: Giúp học các nhúng sao cho các hình ảnh tương tự gần nhau hơn trong không gian nhúng.
 
 ## 7. Files
-- `triplet_loss_one_sample.py`: Contain Triplet Loss implementation with 1 anchor and 1 fake sample
-- `triplet_loss_multi_samples.py`: Contain Triplet Loss implementation with 2 anchors and 5 fake samples
-- `notebook/Triplet_Loss.ipynb`: contain example implementation with one and multiple samples
+- `triplet_loss_one_sample.py`:  Chứa triển khai Triplet Loss với 1 mẫu neo và 1 mẫu giả
+- `triplet_loss_multi_samples.py`: Chứa triển khai Triplet Loss với 2 mẫu neo và 5 mẫu giả
+- `notebook/Triplet_Loss.ipynb`: Chứa ví dụ triển khai với một mẫu và nhiều mẫu
