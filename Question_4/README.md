@@ -1,34 +1,35 @@
-# MNIST Image Classification API
+# API Phân Loại Hình Ảnh MNIST
 
-This repository provides a Flask-based API for classifying MNIST handwritten digits using a Multi-Layer Perceptron (MLP) model implemented with Numpy.
+Kho lưu trữ này cung cấp một API dựa trên Flask để phân loại các chữ số viết tay MNIST bằng cách sử dụng mô hình Multi-Layer Perceptron (MLP) được triển khai bằng Numpy.
 
-## Features
+## Tính Năng
 
-- Upload an image of a handwritten digit.
-- Predict the digit using an MLP model.
-- Return the predicted label.
+- Tải lên một hình ảnh của chữ số viết tay.
+- Dự đoán chữ số sử dụng mô hình MLP.
+- Trả về nhãn dự đoán.
 
-## Prerequisites
+## Yêu Cầu
 
-Ensure you have the following packages installed:
+Đảm bảo rằng bạn đã cài đặt các gói sau:
 
 - Flask
 - Numpy
 - Pillow
 
-You can install the required packages using pip:
+Bạn có thể cài đặt các gói cần thiết bằng pip:
 
 ```bash
 pip install -m requirements.txt
 ```
-## Project Structure
+## Cấu Trúc Dự Án
 
-- `app.py`: Main Flask application file that contains the API routes and logic.
-- `checkpoint/model.pkl`: Trained MLP model saved using pickle.
-- `README.md`: This documentation file.
+- `app.py`: Tệp ứng dụng Flask chính chứa các route API và logic.
+- `checkpoint/model.pkl`: Mô hình MLP đã được huấn luyện và lưu bằng pickle.
+- `README.md`: README file
 
 ## How to Run
-Start the Flask application by running:
+Khởi chạy ứng dụng Flask bằng cách chạy:
 ```bash
 python app.py
 ```
+Ứng dụng sẽ có sẵn tại `http://localhost:5000`
