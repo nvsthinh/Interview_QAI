@@ -1,28 +1,31 @@
-# Random Forest Classifier with MNIST dataset
+# Random Forest Classifier trên tập dữ liệu MNIST với Numpy
 ## 1. Random Forest
-A Random Forest is an ensemble learning algorithm used for classification and regression tasks. It operates by constructing a multitude of decision trees during training and outputting the class that is the mode of the classes (classification) or mean prediction (regression) of the individual trees.
+Một mô hình thuộc họ Tree và có một số cải thiện nhất định. Một ví dụ minh họa, Decision Tree đóng vai trò như một chuyên gia mỹ phẩm thì Random Forest giống như một người làm việc trong lĩnh vực đó. Random Forest sẽ cho chúng ta được nhiều góc nhìn hơn, tổng quát hơn → Từ đó đưa ra quyết định có khả năng chính xác cao hơn.
 
-## 2. Structure of Random Forest
-Random Forest includes:
-- $N$ Decision Trees built by Bootstrapped Dataset using Predefined Conditions.
-- From $N$ trees, we get $N$ predictions.
-- The $N$ predictions are aggregated through an Ensemble Bagging method to produce the final result.
+## 2. Cấu trúc của Random Forest
+<p align="center">
+  <img src="https://github.com/nvsthinh/Interview_QAI/blob/main/data/Q1.png" />
+</p>
+Radom Forest bao gồm:
+- $N$ Decision Tree được xây dựng bởi Bootrapped Dataset theo phương pháp Predifined Conditions
+- Từ $N$ tree sẽ cho ra $N$ kết quả dự đoán
+- $N$ kết quả dự đoán qua một phương pháp Ensemble Bagging sẽ cho ra kết quả cuối cùng
 
-## 3. How it works
-- **Step 1**: From the initial data, create a Bootstrapped Dataset based on it.
-Bootstrapped Dataset is a dataset randomly selected from the original dataset. The process works by assigning each sample an equal probability, then randomly selecting data until the generated data has the same size as the original dataset (duplicates are allowed).
-- **Step 2**: Create Decision Trees using the Predefined Conditions method on the Bootstrapped dataset. The method is as follows:
-- **Step 2-1**: Randomly select 2 features from the dataset.
-- **Step 2-2**: Build a Decision Node based on comparing those 2 features; the chosen feature is removed from the dataset.
-- **Step 2-3**: Repeat **Step 2-1 → 2-2** to find the optimal Decision Tree.
-- **Step 3**: Repeat Steps 1 → 2 to find $N$ Decision Trees.
-- **Step 4**: When new data is introduced for prediction, the $N$ Decision Trees will return $N$ results. Using a simple Ensemble method, Majority Voting, the final result is produced.
+## 3. Cách thức hoạt động
+- **Bước 1**: Từ dữ liệu ban đầu, sẽ tạo ra một **Bootrapped Dataset** dựa trên đó.
+    - **Bootrapped Dataset** là bộ dữ liệu được lựa chọn ngẫu nhiên trên bộ dữ liệu gốc. Cách thức hoạt động : gắn cho mỗi samples một xác suất bằng nhau, từ đó lựa chọn ngẫu nhiên dữ liệu cho đến khi dữ liệu sinh ra có kích thước bằng dữ liệu ban đầu (không quan trọng trùng hay không).
+- **Bước 2**: Tạo Decision Tree bằng phương pháp **Predifned Conditions** trên bộ dữ liệu **Boostrapped**. Phương pháp được thực hiện:
+    - **Bước 2-1**: Chọn ngẫu nhiên 2 features trong bộ dữ liệu
+    - **Bước 2-2**: Xây dựng Decision Node dựa trên việc so sánh 2 features đó, features nào được chọn thì loại khỏi bộ dữ liệu
+    - **Bước 2-3**: Lặp lại **Bước 2-1 → 2-2** để tìm ra Decision Tree tối ưu
+- **Bước 3**: Lặp lại **Bước 1 → 2** để tìm ra $N$  Decision Tree
+- **Bước 4**: Khi đưa dữ liệu cần dự đoán vào thì $N$ Decision Tree sẽ trả về $N$ kết quả. Từ đó, bằng phương pháp **Ensemble** đơn giản là **Majority Voting** để đưa ra kết quả cuối cùng
 
 
-*See more detail explain Random Forest model in: [Bài 5 - Random Forest [Thịnh Diablog]](https://flowery-fairy-f0d.notion.site/B-i-5-Random-Forest-d39ed94c6c1240c0b87f1708e5358f12?pvs=4)*
+*Giải thích chi tiết về mô hình Random Forest: [Bài 5 - Random Forest [Thịnh Diablog]](https://flowery-fairy-f0d.notion.site/B-i-5-Random-Forest-d39ed94c6c1240c0b87f1708e5358f12?pvs=4)*
 
 # 4. Files
-- `main.py`: Simple pipeline using Random Forest Classifier in MNIST dataset
-- `model.py`: Random Forest implementation from scratch using Numpy
+- `main.py`: Chứa một pipeline đơn giản sử dụng Random Forest Classifier trên tập dữ liệu MNIST.
+- `model.py`: Triển khai Random Forest scratch sử dụng Numpy.
 - `utils.py`: Load MNIST dataset
-- `notebook/Random_Forest_with_MNIST_Dataset.ipynb`: Example of implementation for Question 1
+- `notebook/Random_Forest_with_MNIST_Dataset.ipynb`: Minh họa một ví dụ triển khai Random Forest Classifier trên tập dữ liệu MNIST cho Question 1.
