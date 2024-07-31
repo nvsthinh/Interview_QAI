@@ -4,8 +4,9 @@ Một mô hình thuộc họ Tree và có một số cải thiện nhất địn
 
 ## 2. Cấu trúc của Random Forest
 <p align="center">
-  <img src="https://github.com/nvsthinh/Interview_QAI/blob/main/data/Q1.png" />
+  <img src="https://github.com/nvsthinh/Interview_QAI/blob/main/data/Q1.png" width="300"/>
 </p>
+
 Radom Forest bao gồm:
 - $N$ Decision Tree được xây dựng bởi Bootrapped Dataset theo phương pháp Predifined Conditions
 - Từ $N$ tree sẽ cho ra $N$ kết quả dự đoán
