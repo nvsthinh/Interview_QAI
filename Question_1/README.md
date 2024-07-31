@@ -4,7 +4,7 @@ Một mô hình thuộc họ Tree và có một số cải thiện nhất địn
 
 ## 2. Cấu trúc của Random Forest
 <p align="center">
-  <img src="https://github.com/nvsthinh/Interview_QAI/blob/main/data/Q1.png" width="300"/>
+  <img src="https://github.com/nvsthinh/Interview_QAI/blob/main/data/Q1.png" width="400"/>
 </p>
 
 Radom Forest bao gồm:
