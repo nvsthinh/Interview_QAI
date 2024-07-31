@@ -1,25 +1,35 @@
 # Triplet Loss
 ## 1. Definition
-Triplet Loss is a commonly used loss function in image recognition and matching problems, especially in deep learning models. The goal of Triplet Loss is to ensure that examples of the same class are closer to each other in the feature space than examples of different classes.
-## 2. Formula Triplet Loss with One Samples
+Triplet Loss is a commonly used loss function in image recognition and matching problems, especially in deep learning models. The goal of Triplet Loss is to ensure that samples of the same class are closer to each other in the feature space than samples of different classes.
+## 2. Formula Triplet Loss with One Samples (Question 2 - a)
 The Triplet Loss can be expressed as:
 
 $$\mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} \max\left(0, \|f(x_i^a) - f(x_i^p)\|^2 - \|f(x_i^a) - f(x_i^n)\|^2 + \alpha\right)$$
 
-Where:
+### 2.1. Triplet Elements
 - $x_i^a$ is the anchor.
-- $x_i^p$ is the positive example.
-- $x_i^n$ is the negative example.
+- $x_i^p$ is the positive sample (same class as the anchor).
+- $x_i^n$ is the negative sample (different class as the anchor).
 - $α$ is the margin.
 - $N$ is the number of triplets used in the loss calculation.
+### 2.2. Embedding Function $f$
+- $f(x)$: A function (usually a neural network) that maps an input $x$ to an embedding space where comparisons can be made.
+### 2.3. Distance Metric
+- $\|f(x_i^a) - f(x_i^p)\|^2$: The squared distance between the anchor and the positive sample in the embedding space. (L2 distance)
+- $\|f(x_i^a) - f(x_i^n)\|^2$: The squared distance between the anchor and the negative sample in the embedding space (L2 distance)
+### 2.4. Margin $\alpha$
+A margin that is enforced between the positive and negative pairs. This margin helps ensure that the negative examples are farther away from the anchor than the positive examples by at least $\alpha$.
+### 2.5. Loss Calculation
+- If the positive pair distance is not sufficiently smaller than the negative pair distance by at least $\alpha$, the term $\|f(x_i^a) - f(x_i^p)\|^2 - \|f(x_i^a) - f(x_i^n)\|^2 + \alpha$ will be positive, contributing to the loss.
+- The $\max$ function ensures that only positive values contribute to the loss. If the difference is negative (i.e., the triplet already satisfies the condition), the loss for that triplet is zero.
 
-## 3. Formula Triplet Loss with Multiple Samples
+## 3. Formula Triplet Loss with Multiple Samples (Question 2 - b)
 $$\mathcal{L} = \frac{1}{A} \sum_{i=1}^{N} \max\left(0, \frac{1}{P} \sum_{p\in P}\|f(x_i^a) - f(x_i^p)\|^2 - \frac{1}{N}\sum_{n\in N} \|f(x_i^a) - f(x_i^n)\|^2 + \alpha\right)$$
 
 Where:
 - $x_i^a$ is the anchor.
-- $x_i^p$ is the positive example.
-- $x_i^n$ is the negative example.
+- $x_i^p$ is the positive sample.
+- $x_i^n$ is the negative sample.
 - $α$ is the margin.
 - $P$ is number of positive samples.
 - $N$ is number of negative samples.
