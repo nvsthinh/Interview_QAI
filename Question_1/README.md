@@ -25,7 +25,7 @@ Radom Forest bao gồm:
 
 *Giải thích chi tiết về mô hình Random Forest: [Bài 5 - Random Forest [Thịnh Diablog]](https://flowery-fairy-f0d.notion.site/B-i-5-Random-Forest-d39ed94c6c1240c0b87f1708e5358f12?pvs=4)*
 
-# 4. Files
+## 4. Files
 - `main.py`: Chứa một pipeline đơn giản sử dụng Random Forest Classifier trên tập dữ liệu MNIST.
 - `model.py`: Triển khai Random Forest scratch sử dụng Numpy.
 - `utils.py`: Load MNIST dataset
